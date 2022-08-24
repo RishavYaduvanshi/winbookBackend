@@ -12,7 +12,7 @@ class PostSerializer(ModelSerializer):
     class Meta:
         model = Post
         
-        fields = ('url', 'caption', 'liked_by', 'created_at', 'updated_at','pk', 'userName')
+        fields = ('url', 'caption', 'liked_by', 'created_at', 'updated_at','pk', 'userName','user')
         read_only_fields = ('created_at', 'updated_at')
         extra_kwargs = {
             'url': {'required': True},
