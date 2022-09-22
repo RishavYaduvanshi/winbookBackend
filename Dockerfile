@@ -1,10 +1,9 @@
-FROM python:3.9
+FROM python:3.10-slim 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-WORKDIR /usr/src/app
-COPY requirements.txt ./
+WORKDIR /app/backend
+COPY . .
 RUN pip install -r requirements.txt
-COPY / .
-RUN python manage.py makemigrations
 RUN python manage.py migrate
+RUN echo "yes" | python manage.py collectstatic --noinput
