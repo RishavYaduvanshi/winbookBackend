@@ -13,6 +13,8 @@ from rest_framework.decorators import action
 from django.db.models import Q
 from django.core.mail import send_mail
 from .helpers import forgot_password
+from rest_framework import serializers
+from rest_framework.pagination import PageNumberPagination
 
 # Create your views here.
 
@@ -127,8 +129,12 @@ def forgotPassword(request):
 
 
 class UserViewSet(ModelViewSet):
+    class UserPaginator(PageNumberPagination):
+        page_size = 10
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    pagination_class = UserPaginator
 
     def create(self, request, *args, **kwargs):
         return Response(
@@ -210,11 +216,24 @@ class UserViewSet(ModelViewSet):
             status=401,
         )
 
-    @action(detail=False, methods=["get"], url_path=r"f/(?P<username>.+)")
+    @action(detail=False, methods=["get", "post"], url_path=r"f/(?P<username>.+)")
     def get_by_username(self, request, *args, **kwargs):
-        query = kwargs["username"]
+        query = kwargs.get("username", None)
+        follow = request.POST.get("follow", None)
+        if query is None:
+            return Response(
+                {"status": "error", "message": "username is empty"}, status=400
+            )
         print(query)
         instance = get_object_or_404(User, username=query)
+
+        if request.user.is_authenticated and (follow is not None):
+            follow = True if follow.lower() == "true" else False
+            print(follow)
+            if follow:
+                request.user.follow(instance)
+            else:
+                request.user.unfollow(instance)
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
@@ -228,5 +247,31 @@ class UserViewSet(ModelViewSet):
             | Q(last_name__icontains=query)
             | Q(email__icontains=query)
         )
-        serializer = self.get_serializer(instance, many=True)
-        return Response(serializer.data)
+        serializer = self.get_serializer(self.paginate_queryset(instance), many=True)
+        return self.get_paginated_response(serializer.data)
+
+    @action(detail=True, methods=["get"])
+    def followers(self, request, *args, **kwargs):
+        class FollowerSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = User
+                fields = ["username", "first_name", "last_name", "dp"]
+
+        instance = self.get_object()
+        serializer = FollowerSerializer(
+            self.paginate_queryset(instance.followers.all()), many=True
+        )
+        return self.get_paginated_response(serializer.data)
+
+    @action(detail=True, methods=["get"])
+    def following(self, request, *args, **kwargs):
+        class FollowingSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = User
+                fields = ["username", "first_name", "last_name", "dp"]
+
+        instance = self.get_object()
+        serializer = FollowingSerializer(
+            self.paginate_queryset(instance.following.all()), many=True
+        )
+        return self.get_paginated_response(serializer.data)

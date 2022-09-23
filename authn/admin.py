@@ -9,5 +9,18 @@ from django.contrib.auth.admin import _
 @admin.register(User)
 class UserAdmin(_UserAdmin):
     fieldsets = _UserAdmin.fieldsets + (
-        (_("Social"), {"fields": ("bio", "dp", "cover")}),
+        (
+            _("Social"),
+            {
+                "fields": (
+                    "bio",
+                    "dp",
+                    "cover",
+                    "followers",
+                    "following",
+                    "private_account",
+                    "blocked_users",
+                )
+            },
+        ),
     )
