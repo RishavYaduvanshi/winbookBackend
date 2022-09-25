@@ -16,7 +16,10 @@ class UserSerializer(ModelSerializer):
         return obj.followers.count()
 
     def get_following(self, obj):
-        return self.context["request"].user.following.filter(pk=obj.pk).exists()
+        user = self.context["request"].user
+        if user.is_anonymous:
+            return None
+        return user.following.filter(pk=obj.pk).exists()
 
     class Meta:
         model = User
