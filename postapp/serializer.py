@@ -6,12 +6,15 @@ class PostSerializer(ModelSerializer):
     
     def get_userName(self, obj):
         return str(obj.user.username)
+    
+    def get_userDp(self, obj):
+        return self.context['request'].build_absolute_uri(str(obj.user.dp))
 
 
 
 
     userName = SerializerMethodField()
-    
+    userDp = SerializerMethodField()
     liked_cnt = SerializerMethodField()
     likedStatus = SerializerMethodField()
     
@@ -26,7 +29,7 @@ class PostSerializer(ModelSerializer):
     class Meta:
         model = Post
         
-        fields = ('url', 'caption', 'liked_cnt', 'created_at', 'updated_at','pk', 'userName','user','likedStatus','user__dp')
+        fields = ('url', 'caption', 'liked_cnt', 'created_at', 'updated_at','pk', 'userName','user','likedStatus','userDp')
         read_only_fields = ('created_at', 'updated_at')
         extra_kwargs = {
             'url': {'required': True},
