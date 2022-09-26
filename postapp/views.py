@@ -38,11 +38,16 @@ class PostViewSet(viewsets.ModelViewSet):
             post.toggle_like(request.user)
 
             return Response(
-                {"likes_count": post.liked_by.count(), "liked_status": post.liked_by.filter(pk=self.request.pk).exists()},
+                {
+                    "likes_count": post.liked_by.count(),
+                    "liked_status": post.liked_by.filter(
+                        pk=self.request.user.pk
+                    ).exists(),
+                },
                 status=status.HTTP_200_OK,
             )
         except Exception as e:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": str(e)})
 
     def destroy(self, request, *args, **kwargs):
         if self.get_object().user.pk == request.user.pk:
