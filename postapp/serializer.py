@@ -6,11 +6,15 @@ class PostSerializer(ModelSerializer):
     
     def get_userName(self, obj):
         return str(obj.user.username)
+    
+    def get_userDp(self, obj):
+        return str(obj.user.dp)
 
 
 
 
     userName = SerializerMethodField()
+    userDp = SerializerMethodField()
     liked_cnt = SerializerMethodField()
     likedStatus = SerializerMethodField()
     
