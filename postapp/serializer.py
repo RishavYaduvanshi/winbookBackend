@@ -11,7 +11,7 @@ class PostSerializer(ModelSerializer):
 
 
     userName = SerializerMethodField()
-    userDp = SerializerMethodField()
+    
     liked_cnt = SerializerMethodField()
     likedStatus = SerializerMethodField()
     
