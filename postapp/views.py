@@ -35,9 +35,10 @@ class PostViewSet(viewsets.ModelViewSet):
     def like(self, request, pk=None):
         try:
             post = self.get_object()
-            hasLiked = post.toggle_like(request.user)
+            post.toggle_like(request.user)
+
             return Response(
-                {"likes_count": post.liked_by.count(), "liked_status": not hasLiked},
+                {"likes_count": post.liked_by.count(), "liked_status": post.liked_by.filter(pk=self.request.pk).exists()},
                 status=status.HTTP_200_OK,
             )
         except Exception as e:
