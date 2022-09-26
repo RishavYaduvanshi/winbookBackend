@@ -8,7 +8,7 @@ class PostSerializer(ModelSerializer):
         return str(obj.user.username)
     
     def get_userDp(self, obj):
-        return obj.user.dp
+        return self.context['request'].build_absolute_uri('/media/'+str(obj.user.dp))
 
 
     userName = SerializerMethodField()
