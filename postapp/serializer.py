@@ -4,11 +4,11 @@ from .models import Post, Comment
 
 
 class CommentSerializer(ModelSerializer):
-    def __init__(self, instance=None, data=..., write=False, **kwargs):
+    def __init__(self, write=False, *args, **kwargs):
         if write == False:
             self.post = SerializerMethodField()
             self.user = SerializerMethodField()
-        super().__init__(instance, data, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_post(self, obj):
         return obj.post.pk
