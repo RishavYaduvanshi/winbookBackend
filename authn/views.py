@@ -203,6 +203,7 @@ class UserViewSet(ModelViewSet):
             return Response({"status": "success", "message": "cover deleted"})
 
         pk = kwargs["pk"]
+
         if request.user.is_superuser or request.user.pk == self.get_object().pk:
             instance = get_object_or_404(User, pk=pk)
             instance.cover = request.data["cover"]

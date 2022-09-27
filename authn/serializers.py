@@ -24,3 +24,4 @@ class UserSerializer(ModelSerializer):
     class Meta:
         model = User
         exclude = ("password", "followers", "blocked_users")
+        depth = 0

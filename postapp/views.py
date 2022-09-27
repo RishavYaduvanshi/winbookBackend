@@ -1,12 +1,10 @@
 from rest_framework import viewsets
-from .models import Post
-from .serializer import PostSerializer
+from .models import Post, Comment
+from .serializer import PostSerializer, CommentSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.views import Response, status
 from rest_framework.decorators import action
 from django.db.models import Q
-
-# Create your views here.
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -77,3 +75,53 @@ class PostViewSet(viewsets.ModelViewSet):
         if self.get_object().user.pk == request.user.pk:
             return super().partial_update(request, *args, **kwargs)
         return Response(status=status.HTTP_403_FORBIDDEN)
+
+    @action(methods=["get"], detail=True)
+    def get_comments(self, request, pk=None):
+        post = self.get_object()
+        return Response(CommentSerializer(post.comments.all(), many=True).data)
+
+    @action(methods=["post"], detail=True)
+    def comment(self, request, pk=None):
+        post = self.get_object()
+        data = request.data.copy()
+        data["user"] = request.user.pk
+        data["post"] = post.pk
+        data["replied_to"] = None
+        print(data)
+        serializer = CommentSerializer(data=data, write=True)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+
+    @action(methods=["post"], detail=True)
+    def reply(self, request, pk=None):
+
+        if self.request.user.is_anonymous:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN, data={"error": "Not logged in"}
+            )
+
+        comment = self.get_object()
+        data = request.data.copy()
+        data["user"] = request.user.pk
+        data["replied_to"] = comment.pk
+        print(data)
+        serializer = CommentSerializer(data=data, write=True)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(methods=["get"], detail=True)
+    def get_replies(self, request, pk=None):
+        comment = self.get_object()
+        return Response(CommentSerializer(comment.replies.all(), many=True).data)

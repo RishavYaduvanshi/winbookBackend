@@ -17,7 +17,7 @@ from os import stat
 from django.contrib import admin
 from django.urls import path, include
 from authn.views import loginfunc, UserViewSet, signupFunc, forgotPassword
-from postapp.views import PostViewSet
+from postapp.views import PostViewSet, CommentViewSet
 from rest_framework.routers import DefaultRouter
 from django.conf import settings
 from django.conf.urls.static import static
@@ -25,6 +25,7 @@ from django.conf.urls.static import static
 router = DefaultRouter()
 router.register("user", UserViewSet)
 router.register("post", PostViewSet)
+router.register("comment", CommentViewSet)
 
 urlpatterns = (
     [
@@ -39,4 +40,3 @@ urlpatterns = (
     + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 )
-

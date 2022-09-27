@@ -1,5 +1,6 @@
 from django.db import models
 from django.dispatch import Signal
+from django.conf import settings
 
 
 class Post(models.Model):
@@ -55,3 +56,36 @@ class Post(models.Model):
             Signal.send_robust(
                 self.__class__, instance=self, user=self.user, action=self.POST_CREATED
             )
+
+
+class Comment(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True
+    )
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name="comments", null=True, blank=True
+    )
+    comment = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    replied_to = models.ForeignKey(
+        "self", on_delete=models.CASCADE, null=True, blank=True, related_name="replies"
+    )
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                check=(
+                    (models.Q(post__isnull=True) | models.Q(replied_to__isnull=True))
+                    & (
+                        models.Q(post__isnull=False)
+                        | models.Q(replied_to__isnull=False)
+                    )
+                ),
+                name="post_xor_replied_to",
+                violation_error_message="Comment must be either a reply or a post comment, not Both",
+            ),
+        ]
+
+    def save(self, *args, **kwargs):
+        print(self.post, self.replied_to, self.user, self.comment)
+        super().save(*args, **kwargs)
