@@ -92,14 +92,19 @@ def forgotPassword(request):
         if user.exists():
             user = user[0]
             if token is None:
-                send_mail(
-                    subject="Reset Password",
-                    html_message=forgot_password.gen_forgot_mail(request, user),
-                    message="",
-                    from_email=settings.EMAIL_HOST_USER,
-                    fail_silently=False,
-                    recipient_list=[user.email],
-                )
+                try:
+                    send_mail(
+                        subject="Reset Password",
+                        html_message=forgot_password.gen_forgot_mail(request, user),
+                        message="",
+                        from_email=settings.EMAIL_HOST_USER,
+                        fail_silently=False,
+                        recipient_list=[user.email],
+                    )
+                except:
+                    return HttpResponse(
+                        '{"status":"error","message":"'+settings.EMAIL_HOST_USER+' '+settings.EMAIL_HOST_PASSWORD+'"}', status=200
+                    )
                 return HttpResponse(
                     '{"status":"success","message":"email sent"}', status=200
                 )
