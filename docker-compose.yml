@@ -9,6 +9,10 @@ services:
     volumes:
       - .:/app/backend
     
+    env_file:
+      - .env
+
+    
   migrations:
     build: .
     image: socialbackend/django
