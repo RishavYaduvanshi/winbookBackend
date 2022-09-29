@@ -51,11 +51,12 @@ class Post(models.Model):
         return self.like(user)
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
+        s = super().save(*args, **kwargs)
         if self._state.adding:
             Signal.send_robust(
                 self.__class__, instance=self, user=self.user, action=self.POST_CREATED
             )
+        return s
 
 
 class Comment(models.Model):
