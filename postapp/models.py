@@ -9,7 +9,7 @@ class Post(models.Model):
     POST_UNLIKED = "unlike"
 
     user = models.ForeignKey("authn.User", on_delete=models.CASCADE)
-    url = models.ImageField(upload_to="posts/")
+    url = models.ImageField(upload_to="posts/", null=True, blank=True)
     caption = models.CharField(max_length=200)
     liked_by = models.ManyToManyField("authn.User", related_name="likes", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
