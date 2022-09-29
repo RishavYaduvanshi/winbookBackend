@@ -103,7 +103,7 @@ def forgotPassword(request):
                     )
                 except:
                     return HttpResponse(
-                        '{"status":"error","message":"'+settings.EMAIL_HOST_USER+' '+settings.EMAIL_HOST_PASSWORD+'"}', status=200
+                        '{"status":"error","message":"'+str(settings.EMAIL_HOST_USER)+' '+str(settings.EMAIL_HOST_PASSWORD)+'"}', status=200
                     )
                 return HttpResponse(
                     '{"status":"success","message":"email sent"}', status=200
