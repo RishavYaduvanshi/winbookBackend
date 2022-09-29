@@ -48,10 +48,10 @@ class PostSerializer(ModelSerializer):
     userDp = SerializerMethodField()
     liked_cnt = SerializerMethodField()
     likedStatus = SerializerMethodField()
-    user = SerializerMethodField()
+    # user = SerializerMethodField()
 
-    def get_user(self, obj):
-        return obj.user.pk
+    # def get_user(self, obj):
+    #     return obj.user.pk
 
     def get_liked_cnt(self, obj):
         return obj.liked_by.count()
