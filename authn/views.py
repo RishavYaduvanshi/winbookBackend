@@ -15,6 +15,7 @@ from django.core.mail import send_mail
 from .helpers import forgot_password
 from rest_framework import serializers
 from rest_framework.pagination import PageNumberPagination
+from django.conf import settings
 
 # Create your views here.
 
@@ -95,7 +96,7 @@ def forgotPassword(request):
                     subject="Reset Password",
                     html_message=forgot_password.gen_forgot_mail(request, user),
                     message="",
-                    from_email="no-reply@winbook.gg",
+                    from_email=settings.EMAIL_HOST_USER,
                     fail_silently=False,
                     recipient_list=[user.email],
                 )
