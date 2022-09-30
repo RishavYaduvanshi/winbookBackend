@@ -125,3 +125,9 @@ class CommentViewSet(viewsets.ModelViewSet):
     def get_replies(self, request, pk=None):
         comment = self.get_object()
         return Response(CommentSerializer(comment.replies.all(), many=True).data)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer([instance], many=True)
+        print(serializer.data)
+        return Response(serializer.data)
