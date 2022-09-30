@@ -88,6 +88,7 @@ class PostViewSet(viewsets.ModelViewSet):
         data["user"] = request.user.pk
         data["post"] = post.pk
         data["replied_to"] = None
+        data['replies'] = None
         print(data)
         serializer = CommentSerializer(data=data, write=True)
         if not serializer.is_valid():
@@ -113,6 +114,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         data = request.data.copy()
         data["user"] = request.user.pk
         data["replied_to"] = comment.pk
+        data['replies'] = None
         print(data)
         serializer = CommentSerializer(data=data, write=True)
         if not serializer.is_valid():
