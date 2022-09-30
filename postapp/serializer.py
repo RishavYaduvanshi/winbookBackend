@@ -34,6 +34,7 @@ class CommentSerializer(ModelSerializer):
         extra_kwargs = {
             "comment": {"required": True},
             "replied_to": {"write_only": True},
+            "replies":{"read_only":True},
         }
 
 
