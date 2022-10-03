@@ -10,10 +10,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveConstraint(
-            model_name="post",
-            name="url_or_caption",
-        ),
         migrations.AddConstraint(
             model_name="post",
             constraint=models.CheckConstraint(
