@@ -1,6 +1,8 @@
+from email.policy import default
 from django.db import models
 from django.dispatch import Signal
 from django.conf import settings
+from uuid import uuid4
 
 
 class Post(models.Model):
@@ -9,8 +11,9 @@ class Post(models.Model):
     POST_UNLIKED = "unlike"
 
     user = models.ForeignKey("authn.User", on_delete=models.CASCADE)
+    post_id = models.UUIDField(default=uuid4, null=True, blank=True)
     url = models.ImageField(upload_to="posts/", null=True, blank=True)
-    caption = models.CharField(max_length=200)
+    caption = models.TextField(default="")
     liked_by = models.ManyToManyField("authn.User", related_name="likes", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -18,6 +21,12 @@ class Post(models.Model):
 
     class Meta:
         ordering = ["-created_at", "-updated_at", "-pk"]
+        constraints = [
+            models.CheckConstraint(
+                check=~models.Q(url__isnull=True, caption__isnull=True),
+                name="url_or_caption",
+            )
+        ]
 
     def like(self, user):
         try:

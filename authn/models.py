@@ -2,14 +2,15 @@ from distutils.command.upload import upload
 from django.db import models
 from django.contrib.auth.models import AbstractUser as _User
 from django.dispatch import Signal
+from uuid import uuid4
 
 # Create your models here.
 class User(_User):
     class Meta:
-        ordering = ("pk",)
+        ordering = ("-date_joined",)
 
     bio = models.TextField(blank=True, default="Add Bio", null=True)
-
+    user_id = models.UUIDField(default=uuid4, null=True, blank=True)
     dp = models.ImageField(
         upload_to="dp/",
         blank=True,
