@@ -14,12 +14,4 @@ class Migration(migrations.Migration):
             model_name="post",
             name="url_or_caption",
         ),
-        migrations.AddConstraint(
-            model_name="post",
-            constraint=models.CheckConstraint(
-                check=models.Q(("caption__length__gt", 1)),
-                name="url_or_caption",
-                violation_error_message="Post must have either a url or a caption",
-            ),
-        ),
     ]
