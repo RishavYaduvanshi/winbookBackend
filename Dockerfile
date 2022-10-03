@@ -3,7 +3,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app/backend
-COPY . .
+COPY requirements.txt .
 RUN pip install -r requirements.txt
-RUN python manage.py migrate
-RUN echo "yes" | python manage.py collectstatic --noinput
+COPY . .
+RUN sh -c "echo \"yes\" | python manage.py collectstatic --noinput"
