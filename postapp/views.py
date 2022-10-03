@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from rest_framework import viewsets
 from .models import Post, Comment
 from .serializer import PostSerializer, CommentSerializer
@@ -21,13 +22,19 @@ class PostViewSet(viewsets.ModelViewSet):
 
         serializer.is_valid(raise_exception=True)
 
-        self.perform_create(serializer)
+        try:
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
 
-        headers = self.get_success_headers(serializer.data)
-
-        return Response(
-            serializer.data, status=status.HTTP_201_CREATED, headers=headers
-        )
+            return Response(
+                serializer.data, status=status.HTTP_201_CREATED, headers=headers
+            )
+        except IntegrityError as e:
+            if "url_or_caption" in str(e):
+                return Response(
+                    {"error": "Image and/or Caption Required"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
     @action(methods=["post"], detail=True)
     def like(self, request, pk=None):

@@ -1,4 +1,3 @@
-from email.policy import default
 from django.db import models
 from django.dispatch import Signal
 from django.conf import settings
@@ -13,7 +12,7 @@ class Post(models.Model):
     user = models.ForeignKey("authn.User", on_delete=models.CASCADE)
     post_id = models.UUIDField(default=uuid4, null=True, blank=True)
     url = models.ImageField(upload_to="posts/", null=True, blank=True)
-    caption = models.TextField(default="")
+    caption = models.TextField(default="", null=True, blank=True)
     liked_by = models.ManyToManyField("authn.User", related_name="likes", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -23,8 +22,9 @@ class Post(models.Model):
         ordering = ["-created_at", "-updated_at", "-pk"]
         constraints = [
             models.CheckConstraint(
-                check=~models.Q(url__isnull=True, caption__isnull=True),
+                check=~(models.Q(caption__exact="") & models.Q(url__exact="")),
                 name="url_or_caption",
+                violation_error_message="Post must have atleast a url or a caption",
             )
         ]
 
