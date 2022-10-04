@@ -2,6 +2,7 @@ from django.db import models
 from django.dispatch import Signal
 from django.conf import settings
 from uuid import uuid4
+from . import signals
 
 
 class Post(models.Model):
@@ -34,7 +35,7 @@ class Post(models.Model):
                 self.liked_by.add(user)
                 self.likes_count += 1
                 self.save()
-                Signal.send_robust(
+                signals.post_signal.send_robust(
                     self.__class__, instance=self, user=user, action=self.POST_LIKED
                 )
             return True
@@ -60,9 +61,11 @@ class Post(models.Model):
         return self.like(user)
 
     def save(self, *args, **kwargs):
+        new_post = self._state.adding
         s = super().save(*args, **kwargs)
-        if self._state.adding:
-            Signal.send_robust(
+        if new_post:
+            print("Post created")
+            signals.post_signal.send_robust(
                 self.__class__, instance=self, user=self.user, action=self.POST_CREATED
             )
         return s

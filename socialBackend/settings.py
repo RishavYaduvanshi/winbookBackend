@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     "postapp",
     "rest_framework",
     "rest_framework.authtoken",
+    "notifzz",
+    "push_notifications",
 ]
 
 MIDDLEWARE = [

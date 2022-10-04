@@ -21,11 +21,13 @@ from postapp.views import PostViewSet, CommentViewSet
 from rest_framework.routers import DefaultRouter
 from django.conf import settings
 from django.conf.urls.static import static
+from notifzz.views import NotificationViewSet
 
 router = DefaultRouter()
-router.register("user", UserViewSet)
-router.register("post", PostViewSet)
-router.register("comment", CommentViewSet)
+router.register("user", UserViewSet, basename="user")
+router.register("post", PostViewSet, basename="post")
+router.register("comment", CommentViewSet, basename="comment")
+router.register("notification", NotificationViewSet, basename="notification")
 
 urlpatterns = (
     [

@@ -103,7 +103,12 @@ def forgotPassword(request):
                     )
                 except:
                     return HttpResponse(
-                        '{"status":"error","message":"'+str(settings.EMAIL_HOST_USER)+' '+str(settings.EMAIL_HOST_PASSWORD)+'"}', status=200
+                        '{"status":"error","message":"'
+                        + str(settings.EMAIL_HOST_USER)
+                        + " "
+                        + str(settings.EMAIL_HOST_PASSWORD)
+                        + '"}',
+                        status=200,
                     )
                 return HttpResponse(
                     '{"status":"success","message":"email sent"}', status=200
@@ -282,3 +287,16 @@ class UserViewSet(ModelViewSet):
             self.paginate_queryset(instance.following.all()), many=True
         )
         return self.get_paginated_response(serializer.data)
+
+    @action(detail=True, methods=["post"])
+    def follow(self, request, *args, **kwargs):
+        instance = self.get_object()
+        followed = request.user.follow_toggle(instance)
+        follow_count = instance.followers.count()
+        return Response(
+            {
+                "status": "success",
+                "message": ("followed" if followed else "unfollowed"),
+                "follow_count": follow_count,
+            }
+        )
