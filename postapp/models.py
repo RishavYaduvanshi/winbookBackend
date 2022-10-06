@@ -72,6 +72,8 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
+    COMMENT_CREATED = "create"
+    COMMENT_UPDATED = "update"
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True
     )
@@ -100,5 +102,18 @@ class Comment(models.Model):
         ]
 
     def save(self, *args, **kwargs):
-        print(self.post, self.replied_to, self.user, self.comment)
-        super().save(*args, **kwargs)
+        is_new = self._state.adding
+        s = super().save(*args, **kwargs)
+        if is_new:
+            signals.comment_signal.send_robust(
+                self.__class__,
+                instance=self,
+                user=self.user,
+                action=self.COMMENT_CREATED,
+            )
+        else:
+            signals.comment_signal.send_robust(
+                self.__class__, instance=self, action=self.COMMENT_UPDATED
+            )
+
+        return s
