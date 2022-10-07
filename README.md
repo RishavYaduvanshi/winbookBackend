@@ -13,22 +13,22 @@
 
 2.  #### Create a virtual environment(optional)
 
-    - Install the Virtual Environment
-      `
-      python3 -m venv venv
-      source venv/bin/activate
+        - Install the Virtual Environment
+        `
+        python3 -m venv venv
+        source venv/bin/activate
 
-      `
+        `
 
-    - Run the installation commands below
-    - To leave the virtual environment
-      ` deactivate `
+        - Run the installation commands below
+        - To leave the virtual environment
+        ` deactivate `
 
 3.  #### Install the requirements
 
-        `
-        pip install -r requirements.txt
-        `
+            `
+            pip install -r requirements.txt
+            `
 
 4.  #### Setup environment variables
 
