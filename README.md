@@ -14,15 +14,17 @@
 2.  #### Create a virtual environment(optional)
 
         - Install the Virtual Environment
-        `
-        python3 -m venv venv
-        source venv/bin/activate
-
-        `
+            ```python
+            python3 -m venv venv
+            source venv/bin/activate
+            ```
 
         - Run the installation commands below
+
         - To leave the virtual environment
-        ` deactivate `
+            ```shell
+             deactivate
+            ```
 
 3.  #### Install the requirements
 
