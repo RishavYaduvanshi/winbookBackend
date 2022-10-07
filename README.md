@@ -9,29 +9,28 @@
 
 ### Installation
 
-#### Clone the repository
+1.  #### Clone the repository
 
-#### Create a virtual environment(optional)
+2.  #### Create a virtual environment(optional)
 
     - Install the Virtual Environment
-        `
-        python3 -m venv venv
-        source venv/bin/activate
+      `
+      python3 -m venv venv
+      source venv/bin/activate
 
-        `
+      `
+
     - Run the installation commands below
     - To leave the virtual environment
-        `
-        deactivate
-        `
+      ` deactivate `
 
-#### Install the requirements
+3.  #### Install the requirements
 
         `
         pip install -r requirements.txt
         `
 
-#### Setup environment variables
+4.  #### Setup environment variables
 
         - Create a .env file in the root directory
         - Add the following variables
@@ -41,7 +40,7 @@
             SITE_URL=http://<your site url>
             `
 
-#### Run the server
+5.  #### Run the server
 
             `
             python manage.py runserver
