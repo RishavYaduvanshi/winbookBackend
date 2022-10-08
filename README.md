@@ -1,5 +1,12 @@
 # WinbookBackend Open Source Project
 
+This is a small social media type project that was developed using the technologies below, and it includes the following sections:
+
+1. Basic login
+2. Posts
+3. Comments
+   and more...
+
 ### Technology
 
     - Python
