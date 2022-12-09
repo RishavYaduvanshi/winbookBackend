@@ -85,6 +85,7 @@ def forgotPassword(request):
 
     email = request.POST.get("email", None)
     token = request.POST.get("token", None)
+    print(email)
     if email is None:
         return HttpResponse('{"status":"error","message":"email is empty"}', status=401)
     else:
@@ -93,6 +94,7 @@ def forgotPassword(request):
             user = user[0]
             if token is None:
                 try:
+                    print("sending mail")
                     send_mail(
                         subject="Reset Password",
                         html_message=forgot_password.gen_forgot_mail(request, user),
@@ -101,12 +103,12 @@ def forgotPassword(request):
                         fail_silently=False,
                         recipient_list=[user.email],
                     )
-                except:
+                    print("mail sent")
+                except Exception as e:
                     return HttpResponse(
                         '{"status":"error","message":"'
-                        + str(settings.EMAIL_HOST_USER)
+                        + str(e)
                         + " "
-                        + str(settings.EMAIL_HOST_PASSWORD)
                         + '"}',
                         status=200,
                     )
