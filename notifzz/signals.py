@@ -97,6 +97,7 @@ def notification_handler(sender, instance, created, **kwargs):
     if created:
         d = NotificationSerializer(instance).data
         print(d)
+        print(instance.users.all())
         desc = d.pop("description")
         for user in instance.users.all():
             devices = GCMDevice.objects.filter(user=user)
