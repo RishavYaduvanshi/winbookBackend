@@ -2,9 +2,8 @@ from django.dispatch import receiver
 from . import models
 from authn import signals as authn_signals, models as authn_models
 from postapp import signals as postapp_signals, models as postapp_models
-from django.db.models.signals import post_save
-from push_notifications.models import GCMDevice
-from rest_framework import serializers
+from . import services
+
 
 @receiver(authn_signals.follow_signal)
 def follow_handler(sender, instance, user, action, **kwargs):
@@ -14,12 +13,14 @@ def follow_handler(sender, instance, user, action, **kwargs):
     print("kwargs: ", kwargs)
 
     if action == "follow":
-        models.Notification.objects.create(
+        notif = models.Notification.objects.create(
             title="New Follower",
             description="{actor} started following you".format(actor=instance),
             users=[user],
             actor=instance,
         )
+        
+        services.send_notification(notif)
 
 
 @receiver(postapp_signals.post_signal)
@@ -39,6 +40,7 @@ def like_handler(sender, instance, user, action, **kwargs):
         notif.save()
         notif.users.add(instance.user)
         notif.save()
+        services.send_notification(notif)
 
     elif action == postapp_models.Post.POST_CREATED:
         if user.followers.count() == 0:
@@ -51,6 +53,7 @@ def like_handler(sender, instance, user, action, **kwargs):
         notif.save()
         notif.users.set(user.followers.all())
         notif.save()
+        services.send_notification(notif)
 
 
 @receiver(postapp_signals.comment_signal)
@@ -72,6 +75,7 @@ def comment_handler(sender, instance, user, action, **kwargs):
         notif.save()
         notif.users.add(instance.post.user)
         notif.save()
+        services.send_notification(notif)
 
     elif action == postapp_models.Comment.REPLY_CREATED:
         if instance.replied_to.user == user:
@@ -85,22 +89,4 @@ def comment_handler(sender, instance, user, action, **kwargs):
         notif.save()
         notif.users.add(instance.replied_to.user)
         notif.save()
-
-
-@receiver(post_save, sender=models.Notification)
-def notification_handler(sender, instance, created, **kwargs):
-    class NotificationSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = models.Notification
-            exclude = ["users"]
-
-    if created:
-        d = NotificationSerializer(instance).data
-        print(d)
-        print(instance.users.all())
-        desc = d.pop("description")
-        for user in instance.users.all():
-            devices = GCMDevice.objects.filter(user=user)
-            print(devices)
-            devices.send_message(desc, extra=d)
-
+        services.send_notification(notif)
