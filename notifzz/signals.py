@@ -95,7 +95,7 @@ def notification_handler(sender, instance, created, **kwargs):
             exclude = ["users"]
 
     if created:
-        print(users)
+        print(instance.users.all())
         d = NotificationSerializer(instance).data
         print(d)
         desc = d.pop("description")
