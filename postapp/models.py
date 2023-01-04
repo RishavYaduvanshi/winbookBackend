@@ -73,6 +73,7 @@ class Post(models.Model):
 
 class Comment(models.Model):
     COMMENT_CREATED = "create"
+    REPLY = "create"
     COMMENT_UPDATED = "update"
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True

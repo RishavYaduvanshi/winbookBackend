@@ -2,6 +2,9 @@ from django.dispatch import receiver
 from . import models
 from authn import signals as authn_signals, models as authn_models
 from postapp import signals as postapp_signals, models as postapp_models
+from django.db.models.signals import post_save
+from push_notifications.models import GCMDevice
+from rest_framework import serializers
 
 
 @receiver(authn_signals.follow_signal)
@@ -83,3 +86,17 @@ def comment_handler(sender, instance, user, action, **kwargs):
         notif.save()
         notif.users.add(instance.replied_to.user)
         notif.save()
+
+
+@receiver(post_save, sender=models.Notification)
+def notification_handler(sender, instance, created, **kwargs):
+    class NotificationSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = models.Notification
+            exclude = ["users"]
+
+    if created:
+        d = NotificationSerializer(instance).data
+        desc = d.pop("description")
+        devices = GCMDevice.objects.filter(user__in=instance.users.all())
+        devices.send_message(desc, extra=d)
