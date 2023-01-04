@@ -95,12 +95,11 @@ def notification_handler(sender, instance, created, **kwargs):
             exclude = ["users"]
 
     if created:
-        print(instance.users.all())
         d = NotificationSerializer(instance).data
         print(d)
         desc = d.pop("description")
-        devices = GCMDevice.objects.filter(user__in=instance.users.all())
-        print(devices)
-
-        devices.send_message(desc, extra=d)
+        for user in instance.users.all():
+            devices = GCMDevice.objects.filter(user=user)
+            print(devices)
+            devices.send_message(desc, extra=d)
 
