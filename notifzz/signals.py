@@ -2,10 +2,13 @@ from django.dispatch import receiver
 from . import models
 from authn import signals as authn_signals, models as authn_models
 from postapp import signals as postapp_signals, models as postapp_models
+<<<<<<< HEAD
+from django.db.models.signals import post_save
+=======
 from django.db.models.signals import post_save
 from push_notifications.models import GCMDevice
 from rest_framework import serializers
-
+>>>>>>> 500136e1fa1a396102d60936732eef3b2b83ed05
 
 @receiver(authn_signals.follow_signal)
 def follow_handler(sender, instance, user, action, **kwargs):
@@ -96,7 +99,12 @@ def notification_handler(sender, instance, created, **kwargs):
             exclude = ["users"]
 
     if created:
+        print(users)
         d = NotificationSerializer(instance).data
+        print(d)
         desc = d.pop("description")
         devices = GCMDevice.objects.filter(user__in=instance.users.all())
+        print(devices)
+
         devices.send_message(desc, extra=d)
+
