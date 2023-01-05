@@ -1,0 +1,24 @@
+on:
+ push:
+   branches: [main,master]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+  
+    steps:
+      - name: SSH Command
+        uses: D3rHase/ssh-command-action@v0.2.2
+        
+        with:
+          
+          host: 3.111.252.41
+          port: 22 # optional, default is 22
+          user: ${{secrets.CD_USER }}
+          private_key: ${{secrets.CD_SSH_PRIVATE }}
+          
+#           command: # optional, default is echo 'Hello world'
+
+
+   
+   
