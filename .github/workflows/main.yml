@@ -20,7 +20,7 @@ jobs:
           user: ${{secrets.CD_USER }}
           private_key: ${{secrets.CD_SSH_PRIVATE }}
           
-#           command: # optional, default is echo 'Hello world'
+          command: cd winbookBackend; git pull; docker-compose up -d --build;cd ..
 
 
    
