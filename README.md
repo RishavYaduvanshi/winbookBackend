@@ -1,4 +1,5 @@
 # WinbookBackend Open Source Project
+[![.github/workflows/main.yml](https://github.com/team-d3m0n1k/winbookBackend/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/team-d3m0n1k/winbookBackend/actions/workflows/main.yml)
 
 This is a small social media type project that was developed using the technologies below, and it includes the following sections:
 
