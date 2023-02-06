@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.views import Response, status
 from rest_framework.decorators import action
 from django.db.models import Q
+from django.http import HttpRequest, Http404
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -35,6 +36,24 @@ class PostViewSet(viewsets.ModelViewSet):
                     {"error": "Image and/or Caption Required"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
+
+    @action(methods=["get"], detail=False)
+    def feed(self, request: HttpRequest, *args, **kwargs):
+        if request.user.is_anonymous:
+            return Http404()
+
+        queryset = self.queryset.filter(
+            Q(user__in=request.user.followers.all())
+            | Q(user__in=request.user.followers.all())
+        ).order_by("-created_at")
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     @action(methods=["post"], detail=True)
     def like(self, request, pk=None):
