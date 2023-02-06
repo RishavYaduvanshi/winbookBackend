@@ -24,20 +24,34 @@ def loginfunc(request):
     if not request.POST:
         request.POST = json.loads(request.body)
 
-    username = request.POST.get("username", None)
+    username_or_email = request.POST.get("username", None)
     password = request.POST.get("password", None)
 
-    if username is None or password is None:
+    if username_or_email is None or password is None:
         return HttpResponse(
-            '{"status":"error","message":"username or password is empty"}', status=401
+            '{"status":"error","message":"username/Email or password is empty"}',
+            status=401,
         )
 
-    print(username, password)
-    user = authenticate(username=username, password=password)
+    user = authenticate(username=username_or_email, password=password)
+    if user is None:
+        users = User.objects.filter(email=username_or_email)
+
+        if not users.exists():
+            user = None
+        elif users.count() > 1:
+            return HttpResponse(
+                '{"status":"error","message":"More than 1 user have the same email, use username to login"}',
+                status=401,
+            )
+        elif users.count() == 1:
+            print(users.first())
+            user = authenticate(username=users.first().username, password=password)
 
     if user is None:
         return HttpResponse(
-            '{"status":"error","message":"username or password is wrong"}', status=401
+            '{"status":"error","message":"username/Email or password is wrong"}',
+            status=401,
         )
     else:
         token, _ = Token.objects.get_or_create(user=user)
@@ -67,10 +81,15 @@ def signupFunc(request):
         or email is None
     ):
         return HttpResponse(
-            '{"status":"error","message":"username or password is empty"}', status=401
+            '{"status":"error","message":"All details are mandatory"}', status=401
         )
 
     else:
+        if User.objects.filter(email=email).exists():
+            return HttpResponse(
+                '{"status":"error","message":"User with the same email already exists in our DataBase"}',
+                status=401,
+            )
         user = User(
             username=username, first_name=first_name, last_name=last_name, email=email
         )
@@ -106,10 +125,7 @@ def forgotPassword(request):
                     print("mail sent")
                 except Exception as e:
                     return HttpResponse(
-                        '{"status":"error","message":"'
-                        + str(e)
-                        + " "
-                        + '"}',
+                        '{"status":"error","message":"' + str(e) + " " + '"}',
                         status=200,
                     )
                 return HttpResponse(
