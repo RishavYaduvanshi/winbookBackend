@@ -56,7 +56,15 @@ def loginfunc(request):
     else:
         token, _ = Token.objects.get_or_create(user=user)
         return HttpResponse(
-            '{"status":"success","token":"' + token.key + '"}', status=200
+            json.dumps(
+                {
+                    "status": "success",
+                    "token": token.key,
+                    "username":token.user.username,
+                    "pk":token.user.pk,
+                }
+            ),
+         status=200,
         )
 
 
