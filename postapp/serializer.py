@@ -2,6 +2,10 @@ from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
 from .models import Post, Comment
 
+from django.apps import apps
+
+UserModel = apps.get_model("authn", "user")
+
 
 class CommentSerializer(ModelSerializer):
     def __init__(self, write=False, *args, **kwargs):
@@ -34,7 +38,7 @@ class CommentSerializer(ModelSerializer):
         extra_kwargs = {
             "comment": {"required": True},
             "replied_to": {"write_only": True},
-            "replies":{"read_only":True},
+            "replies": {"read_only": True},
         }
 
 
@@ -45,10 +49,28 @@ class PostSerializer(ModelSerializer):
     def get_userDp(self, obj):
         return self.context["request"].build_absolute_uri("/media/" + str(obj.user.dp))
 
+    def get_likedBy(self, obj: Post):
+        class UserSerializer(ModelSerializer):
+            class Meta:
+                model = UserModel
+                fields = (
+                    "pk",
+                    "dp",
+                    "username",
+                    "first_name",
+                    "last_name",
+                )
+
+        return UserSerializer(
+            obj.liked_by.all(),
+            many=True,
+        ).data
+
     userName = SerializerMethodField()
     userDp = SerializerMethodField()
     liked_cnt = SerializerMethodField()
     likedStatus = SerializerMethodField()
+    likedBy = SerializerMethodField()
     # user = SerializerMethodField()
 
     # def get_user(self, obj):
@@ -77,6 +99,7 @@ class PostSerializer(ModelSerializer):
             "likedStatus",
             "userDp",
             "comments",
+            "likedBy",
         )
         read_only_fields = ("created_at", "updated_at")
         extra_kwargs = {
