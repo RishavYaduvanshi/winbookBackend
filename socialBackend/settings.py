@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "notifzz",
     "push_notifications",
+    "chat",
 ]
 
 MIDDLEWARE = [
