@@ -44,7 +44,8 @@ class PostViewSet(viewsets.ModelViewSet):
 
         queryset = self.queryset.filter(
             Q(user__in=request.user.followers.all())
-            | Q(user__in=request.user.followers.all())
+            | Q(user__in=request.user.following.all())
+            | Q(user=request.user)
         ).order_by("-created_at")
 
         page = self.paginate_queryset(queryset)
