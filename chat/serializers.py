@@ -14,8 +14,15 @@ class MessageSerializer(serializers.ModelSerializer):
 
 
 class ChatSerializer(serializers.ModelSerializer):
+    def get_dp(self, obj):
+        return (
+            obj.dp.url
+            if obj.is_group
+            else obj.users.exclude(id=self.context["request"].user.id).first().dp.url
+        )
 
     messages = MessageSerializer(many=True, read_only=True)
+    dp = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Chat

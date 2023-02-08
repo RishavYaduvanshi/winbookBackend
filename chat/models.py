@@ -7,25 +7,19 @@ class Chat(models.Model):
         settings.AUTH_USER_MODEL,
         related_name="chats",
     )
-    name = models.CharField(max_length=255, blank=True)
 
-    class Meta:
-        ordering = ["-pk"]
-        # same users in different order are the same chat
-        constraints = [
-            models.UniqueConstraint(
-                fields=["users"], name="unique_users", condition=models.Q(name="")
-            )
-        ]
+    name = models.CharField(max_length=255, blank=False)
+
+    dp = models.ImageField(
+        upload_to="chat/dp",
+        blank=True,
+        default="../static/authn/dp.png",
+    )
+
+    is_group = models.BooleanField(default=False)
 
     def __str__(self):
-        if self.name:
-            return self.name
-        users = self.users.all()
-        count = users.count()
-        if count == 2:
-            return f"{users[0].username} and {users[1].username}"
-        return f"{self.pk} {users[0].username} and {count - 1} others"
+        return self.name
 
 
 class Message(models.Model):
