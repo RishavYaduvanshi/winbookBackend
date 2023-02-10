@@ -4,7 +4,10 @@ from postapp.serializer import PostSerializer
 
 
 class UserSerializer(ModelSerializer):
-    posts = PostSerializer(many=True, read_only=True, source="posts")
+    posts = PostSerializer(
+        many=True,
+        read_only=True,
+    )  # source="posts")
     follower_count = SerializerMethodField()
     following_count = SerializerMethodField()
     following = SerializerMethodField()
