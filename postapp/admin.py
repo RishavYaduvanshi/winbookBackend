@@ -16,4 +16,4 @@ class CommentAdmin(admin.ModelAdmin):
         "created_at",
     )
     list_filter = ("user", "post", "created_at")
-    search_fields = ("user", "post", "comment")
+    search_fields = ("user__username", "post__caption", "comment")
