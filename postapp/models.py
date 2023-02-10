@@ -10,7 +10,9 @@ class Post(models.Model):
     POST_LIKED = "like"
     POST_UNLIKED = "unlike"
 
-    user = models.ForeignKey("authn.User", on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        "authn.User", on_delete=models.CASCADE, related_name="posts"
+    )
     post_id = models.UUIDField(default=uuid4, null=True, blank=True)
     url = models.ImageField(upload_to="posts/", null=True, blank=True)
     caption = models.TextField(default="", null=True, blank=True)

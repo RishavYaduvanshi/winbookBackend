@@ -7,6 +7,9 @@ from rest_framework.views import Response, status
 from rest_framework.decorators import action
 from django.db.models import Q
 from django.http import HttpRequest, Http404
+from django.apps import apps
+
+UserModel = apps.get_model("authn", "User")
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -47,6 +50,10 @@ class PostViewSet(viewsets.ModelViewSet):
             | Q(user__in=request.user.following.all())
             | Q(user=request.user)
         ).order_by("-created_at")
+
+        # handled if the user has no followers and following
+        if queryset.count() == 0:
+            queryset = UserModel.objects.filter(username="admin").first().posts.all()
 
         page = self.paginate_queryset(queryset)
         if page is not None:
