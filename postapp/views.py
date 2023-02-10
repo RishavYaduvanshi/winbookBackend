@@ -53,7 +53,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
         # handled if the user has no followers and following
         if queryset.count() == 0:
-            queryset = UserModel.objects.filter(username="admin").first().posts.all()
+            queryset = UserModel.objects.filter(username="wibrant").first().posts.all()
 
         page = self.paginate_queryset(queryset)
         if page is not None:
