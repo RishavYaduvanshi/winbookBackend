@@ -24,3 +24,11 @@ class UserAdmin(_UserAdmin):
             },
         ),
     )
+
+    filter_horizontal = _UserAdmin.filter_horizontal + (
+        "followers",
+        "following",
+        "blocked_users",
+    )
+
+    list_filter = _UserAdmin.list_filter + ("date_joined",)
