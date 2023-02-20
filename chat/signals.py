@@ -5,4 +5,3 @@ from django.conf import settings
 from django.apps import apps
 
 User = apps.get_model(settings.AUTH_USER_MODEL)
-

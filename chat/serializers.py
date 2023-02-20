@@ -14,15 +14,14 @@ class MessageSerializer(serializers.ModelSerializer):
 
 
 class ChatSerializer(serializers.ModelSerializer):
-    def get_dp(self, obj):
-        return (
-            obj.dp.url
-            if obj.is_group
-            else obj.users.exclude(id=self.context["request"].user.id).first().dp.url
-        )
+    def get_recent_message(self, obj):
+        return MessageSerializer(obj.messages.all().order_by("-created").first()).data
 
-    messages = MessageSerializer(many=True, read_only=True)
-    dp = serializers.SerializerMethodField()
+    recent_message = serializers.SerializerMethodField()
+
+    def update(self, instance, validated_data):
+        print(validated_data)
+        return super().update(instance, validated_data)
 
     class Meta:
         model = models.Chat
