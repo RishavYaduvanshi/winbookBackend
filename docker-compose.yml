@@ -8,11 +8,10 @@ services:
       - "8080:8080"
     volumes:
       - .:/app/backend
-    
+
     env_file:
       - .env
 
-    
   migrations:
     build: .
     image: socialbackend/django
@@ -20,3 +19,7 @@ services:
     volumes:
       - .:/app/backend
 
+  redis:
+    image: redis:7.0.5
+    ports:
+      - "6379:6379"

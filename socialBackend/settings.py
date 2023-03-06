@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "notifzz",
     "push_notifications",
+    "chat",
 ]
 
 MIDDLEWARE = [
@@ -85,17 +86,29 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "socialBackend.wsgi.application"
+ASGI_APPLICATION = "socialBackend.asgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": os.environ.get("DB_NAME", "wibrant"),
+        "USER": os.environ.get("DB_USER", "wibrant"),
+        "PASSWORD": os.environ.get("DB_PASSWORD", "shax"),
+        "HOST": os.environ.get("DB_HOST", "localhost"),
+        "PORT": os.environ.get("DB_PORT", "5432"),
     }
 }
+DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
 
 # Password validation
@@ -122,7 +135,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Kolkata"
 
 USE_I18N = True
 
@@ -132,7 +145,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = "static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -176,6 +188,22 @@ SITE_URL = os.environ.get("SITE_URL", None)
 if EMAIL_HOST_USER is None or EMAIL_HOST_PASSWORD is None or SITE_URL is None:
     print("EMAIL_HOST_USER or EMAIL_HOST_PASSWORD or SITE_URL is not set")
 
+
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels_redis.core.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [os.environ.get("REDIS_URL", "redis://localhost:6379")],
+#         },
+#     },
+# }
+
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": os.environ.get("REDIS_URL", "redis://localhost:6379"),
+#     }
+# }
 PUSH_NOTIFICATIONS_SETTINGS = {
         "FCM_API_KEY": os.environ.get("FCM_API_KEY", None),
         "GCM_API_KEY": os.environ.get("FCM_API_KEY", None),
