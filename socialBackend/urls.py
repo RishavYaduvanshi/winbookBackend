@@ -22,15 +22,16 @@ from rest_framework.routers import DefaultRouter
 from django.conf import settings
 from django.conf.urls.static import static
 from notifzz.views import NotificationViewSet
-from chat.views import ChatViewSet, KeyRingViewSet
+from chat.views import MessageViewSet
 
 router = DefaultRouter()
 router.register("user", UserViewSet, basename="user")
 router.register("post", PostViewSet, basename="post")
 router.register("comment", CommentViewSet, basename="comment")
 router.register("notification", NotificationViewSet, basename="notification")
-router.register("chat", ChatViewSet, basename="chat")
-router.register("keyring", KeyRingViewSet, basename="keyring")
+router.register("message", MessageViewSet, basename="message")
+
+
 urlpatterns = (
     [
         path("admin/", admin.site.urls),
