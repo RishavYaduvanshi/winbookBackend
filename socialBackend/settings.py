@@ -184,6 +184,7 @@ EMAIL_USE_TLS = True
 
 SITE_URL = os.environ.get("SITE_URL", None)
 
+
 if EMAIL_HOST_USER is None or EMAIL_HOST_PASSWORD is None or SITE_URL is None:
     print("EMAIL_HOST_USER or EMAIL_HOST_PASSWORD or SITE_URL is not set")
 
@@ -203,3 +204,7 @@ if EMAIL_HOST_USER is None or EMAIL_HOST_PASSWORD is None or SITE_URL is None:
 #         "LOCATION": os.environ.get("REDIS_URL", "redis://localhost:6379"),
 #     }
 # }
+PUSH_NOTIFICATIONS_SETTINGS = {
+        "FCM_API_KEY": os.environ.get("FCM_API_KEY", None),
+        "GCM_API_KEY": os.environ.get("FCM_API_KEY", None),
+}
