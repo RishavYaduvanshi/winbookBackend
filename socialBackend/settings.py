@@ -92,22 +92,22 @@ ASGI_APPLICATION = "socialBackend.asgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
-#     }
-# }
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.environ.get("DB_NAME", "wibrant"),
-        "USER": os.environ.get("DB_USER", "wibrant"),
-        "PASSWORD": os.environ.get("DB_PASSWORD", "shax"),
-        "HOST": os.environ.get("DB_HOST", "localhost"),
-        "PORT": os.environ.get("DB_PORT", "5432"),
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql_psycopg2",
+#         "NAME": os.environ.get("DB_NAME", "wibrant"),
+#         "USER": os.environ.get("DB_USER", "wibrant"),
+#         "PASSWORD": os.environ.get("DB_PASSWORD", "shax"),
+#         "HOST": os.environ.get("DB_HOST", "localhost"),
+#         "PORT": os.environ.get("DB_PORT", "5432"),
+#     }
+# }
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
 

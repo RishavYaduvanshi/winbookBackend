@@ -13,6 +13,8 @@ services:
       - .env
 
   migrations:
+    depends_on:
+      - web
     build: .
     image: socialbackend/django
     command: "python manage.py migrate --noinput"
@@ -21,5 +23,5 @@ services:
 
   redis:
     image: redis:7.0.5
-    ports:
-      - "6379:6379"
+    # ports:
+    #   - "6379:6379"
