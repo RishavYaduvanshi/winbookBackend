@@ -34,6 +34,7 @@ ALLOWED_HOSTS = ["winbookbackend.d3m0n1k.engineer", "*"]
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -189,22 +190,22 @@ if EMAIL_HOST_USER is None or EMAIL_HOST_PASSWORD is None or SITE_URL is None:
     print("EMAIL_HOST_USER or EMAIL_HOST_PASSWORD or SITE_URL is not set")
 
 
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels_redis.core.RedisChannelLayer",
-#         "CONFIG": {
-#             "hosts": [os.environ.get("REDIS_URL", "redis://localhost:6379")],
-#         },
-#     },
-# }
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [os.environ.get("REDIS_URL", "redis://localhost:6379")],
+        },
+    },
+}
 
-# CACHES = {
-#     "default": {
-#         "BACKEND": "django_redis.cache.RedisCache",
-#         "LOCATION": os.environ.get("REDIS_URL", "redis://localhost:6379"),
-#     }
-# }
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": os.environ.get("REDIS_URL", "redis://localhost:6379"),
+    }
+}
 PUSH_NOTIFICATIONS_SETTINGS = {
-        "FCM_API_KEY": os.environ.get("FCM_API_KEY", None),
-        "GCM_API_KEY": os.environ.get("FCM_API_KEY", None),
+    "FCM_API_KEY": os.environ.get("FCM_API_KEY", None),
+    "GCM_API_KEY": os.environ.get("FCM_API_KEY", None),
 }
