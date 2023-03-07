@@ -1,6 +1,5 @@
 from channels import auth
 from channels.db import database_sync_to_async
-from django.contrib.auth.models import AnonymousUser
 
 
 class TokenAuthenticationMiddleware(auth.BaseMiddleware):
@@ -20,7 +19,8 @@ class TokenAuthenticationMiddleware(auth.BaseMiddleware):
 
     @database_sync_to_async
     def resolve_token(self, token: str):
-        return self.User.objects.get(auth_token__pk=token)
+        query = self.User.objects.filter(auth_token__pk=token)
+        return query.first() if query.exists() else None
 
     async def __call__(self, scope, receive, send):
         if scope["type"] == "websocket":
@@ -38,7 +38,9 @@ class TokenAuthenticationMiddleware(auth.BaseMiddleware):
             if token is not None:
                 token = token.split(" ")[1]
                 scope["user"] = await self.resolve_token(token)
-            else:
-                scope["user"] = AnonymousUser()
+
+            from django.contrib.auth.models import AnonymousUser
+
+            scope["user"] = scope["user"] or AnonymousUser()
 
         return await super().__call__(scope, receive, send)
