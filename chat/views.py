@@ -32,7 +32,14 @@ class MessageViewSet(viewsets.ModelViewSet):
     def get_chats(self, request: HttpRequest):
         # get all unique users with whom the current user has chatted
 
-        chats = self.get_queryset()
+        chats = (
+            self.get_queryset()
+            .annotate(
+                user=F("from_user") if F("to_user") == request.user else F("to_user")
+            )
+            .distinct("user")
+        )
+        # chats = self.get_queryset().distinct("from_user", "to_user")
         page = self.paginate_queryset(chats)
 
         if page is not None:
