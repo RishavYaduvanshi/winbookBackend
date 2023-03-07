@@ -31,7 +31,6 @@ class ChatConsumer(consumer.Consumer):
         body["from_user"] = self.scope["user"].pk
         serializer = MessageSerializer(data=body)
         await utils.saveSerializer(serializer)
-        return serializer.data
 
     ROUTING = {
         "echo": echo,

@@ -38,4 +38,6 @@ class Consumer(websocket.AsyncJsonWebsocketConsumer):
         return {"message": f"No route for {content.get('handler', '')}"}
 
     async def receive_json(self, content, **kwargs) -> None:
-        return await self.send_json(await self.handle(content, **kwargs), **kwargs)
+        response = await self.handle(content, **kwargs)
+        if response is not None:
+            await self.send_json(response, **kwargs)
