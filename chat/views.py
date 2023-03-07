@@ -19,34 +19,7 @@ class MessageViewSet(viewsets.ModelViewSet):
     class MessagePagination(pagination.PageNumberPagination):
         page_size = 10
 
-    class MessageSerializer(serializers.ModelSerializer):
-        from_user = serializers.SerializerMethodField()
-        to_user = serializers.SerializerMethodField()
-
-        message = serializers.SerializerMethodField()
-
-        class Meta:
-            model = models.Message
-            fields = ["from_user", "to_user", "message", "created"]
-
-        def get_from_user(self, obj):
-            return {
-                "name": obj.from_user.username,
-                "dp": obj.from_user.dp.url,
-                "pk": obj.from_user.pk,
-            }
-
-        def get_to_user(self, obj):
-            return {
-                "name": obj.to_user.username,
-                "dp": obj.to_user.dp.url,
-                "pk": obj.to_user.pk,
-            }
-
-        def get_message(self, obj):
-            return obj.message or "sent an image"
-
-    serializer_class = MessageSerializer
+    serializer_class = chat_serializers.MessageSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = MessagePagination
 
@@ -59,7 +32,7 @@ class MessageViewSet(viewsets.ModelViewSet):
     def get_chats(self, request: HttpRequest):
         # get all unique users with whom the current user has chatted
 
-        chats = self.get_queryset().distinct("from_user", "to_user")
+        chats = self.get_queryset()
         page = self.paginate_queryset(chats)
 
         if page is not None:

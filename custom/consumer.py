@@ -15,14 +15,16 @@ class Consumer(websocket.AsyncJsonWebsocketConsumer):
 
         if self.AUTH and user is None:
             await self.send_json({"message": "unauthorized"})
-            return await self.close()
+            await self.close()
+            return None
 
-        return await self.send_json(
+        await self.send_json(
             {
                 "message": "connected",
                 "user": str(user),
             }
         )
+        return user
 
     async def handle(self, content: Dict[str, Any], **kwargs) -> Dict:
         """

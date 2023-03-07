@@ -53,19 +53,18 @@ def loginfunc(request):
             '{"status":"error","message":"username/Email or password is wrong"}',
             status=401,
         )
-    else:
-        token, _ = Token.objects.get_or_create(user=user)
-        return HttpResponse(
-            json.dumps(
-                {
-                    "status": "success",
-                    "token": token.key,
-                    "username":token.user.username,
-                    "pk":token.user.pk,
-                }
-            ),
-         status=200,
-        )
+    token, _ = Token.objects.get_or_create(user=user)
+    return HttpResponse(
+        json.dumps(
+            {
+                "status": "success",
+                "token": str(token.key),
+                "username": str(token.user.username),
+                "pk": token.user.pk,
+            }
+        ),
+        status=200,
+    )
 
 
 def signupFunc(request):
@@ -92,17 +91,16 @@ def signupFunc(request):
             '{"status":"error","message":"All details are mandatory"}', status=401
         )
 
-    else:
-        if User.objects.filter(email=email).exists():
-            return HttpResponse(
-                '{"status":"error","message":"User with the same email already exists in our DataBase"}',
-                status=401,
-            )
-        user = User(
-            username=username, first_name=first_name, last_name=last_name, email=email
+    if User.objects.filter(email=email).exists():
+        return HttpResponse(
+            '{"status":"error","message":"User with the same email already exists in our DataBase"}',
+            status=401,
         )
-        user.set_password(password)
-        user.save()
+    user = User(
+        username=username, first_name=first_name, last_name=last_name, email=email
+    )
+    user.set_password(password)
+    user.save()
     return HttpResponse('{"status":"success","message":"signup success"}', status=200)
 
 
@@ -115,54 +113,51 @@ def forgotPassword(request):
     print(email)
     if email is None:
         return HttpResponse('{"status":"error","message":"email is empty"}', status=401)
-    else:
-        user = User.objects.filter(email=email)
-        if user.exists():
-            user = user[0]
-            if token is None:
-                try:
-                    print("sending mail")
-                    send_mail(
-                        subject="Reset Password",
-                        html_message=forgot_password.gen_forgot_mail(request, user),
-                        message="",
-                        from_email=settings.EMAIL_HOST_USER,
-                        fail_silently=False,
-                        recipient_list=[user.email],
-                    )
-                    print("mail sent")
-                except Exception as e:
-                    return HttpResponse(
-                        '{"status":"error","message":"' + str(e) + " " + '"}',
-                        status=200,
-                    )
-                return HttpResponse(
-                    '{"status":"success","message":"email sent"}', status=200
-                )
-            else:
-                password = request.POST.get("password", None)
-                if password is None:
-                    return HttpResponse(
-                        '{"status":"error","message":"password is empty"}', status=401
-                    )
+    user = User.objects.filter(email=email)
+    if not user.exists():
+        return HttpResponse(
+            '{"status":"error","message":"email is invalid"}', status=401
+        )
+    user = user[0]
+    if token is not None:
+        return _extracted_from_forgotPassword_(request, user, token)
+    try:
+        print("sending mail")
+        send_mail(
+            subject="Reset Password",
+            html_message=forgot_password.gen_forgot_mail(request, user),
+            message="",
+            from_email=settings.EMAIL_HOST_USER,
+            fail_silently=False,
+            recipient_list=[user.email],
+        )
+        print("mail sent")
+    except Exception as e:
+        return HttpResponse(
+            '{"status":"error","message":"' + str(e) + " " + '"}',
+            status=200,
+        )
+    return HttpResponse('{"status":"success","message":"email sent"}', status=200)
 
-                if forgot_password.verify_forgot_token(user, token):
-                    user.set_password(password)
-                    user.save()
-                    logoutFromAll = bool(request.POST.get("logout", False))
-                    if logoutFromAll:
-                        Token.objects.filter(user=user).delete()
-                    return HttpResponse(
-                        '{"status":"success","message":"password changed"}', status=200
-                    )
-                else:
-                    return HttpResponse(
-                        '{"status":"error","message":"token is invalid"}', status=401
-                    )
-        else:
-            return HttpResponse(
-                '{"status":"error","message":"email is invalid"}', status=401
-            )
+
+# TODO Rename this here and in `forgotPassword`
+def _extracted_from_forgotPassword_(request, user, token):
+    password = request.POST.get("password", None)
+    if password is None:
+        return HttpResponse(
+            '{"status":"error","message":"password is empty"}', status=401
+        )
+
+    if not forgot_password.verify_forgot_token(user, token):
+        return HttpResponse(
+            '{"status":"error","message":"token is invalid"}', status=401
+        )
+    user.set_password(password)
+    user.save()
+    logoutFromAll = bool(request.POST.get("logout", False))
+    if logoutFromAll:
+        Token.objects.filter(user=user).delete()
+    return HttpResponse('{"status":"success","message":"password changed"}', status=200)
 
 
 class UserViewSet(ModelViewSet):
@@ -256,7 +251,7 @@ class UserViewSet(ModelViewSet):
 
     @action(detail=False, methods=["get", "post"], url_path=r"f/(?P<username>.+)")
     def get_by_username(self, request, *args, **kwargs):
-        query = kwargs.get("username", None)
+        query = kwargs.get("username")
         follow = request.POST.get("follow", None)
         if query is None:
             return Response(
@@ -266,7 +261,7 @@ class UserViewSet(ModelViewSet):
         instance = get_object_or_404(User, username=query)
 
         if request.user.is_authenticated and (follow is not None):
-            follow = True if follow.lower() == "true" else False
+            follow = follow.lower() == "true"
             print(follow)
             if follow:
                 request.user.follow(instance)
