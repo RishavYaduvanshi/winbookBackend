@@ -8,6 +8,7 @@ This is a small social media type project that was developed using the technolog
 3. Comments
    and more...
 
+
 ### Technology
 
     - Python

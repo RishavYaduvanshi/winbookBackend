@@ -35,7 +35,7 @@ class MessageViewSet(viewsets.ModelViewSet):
         chats = self.get_queryset().annotate(
             user=F("from_user") if F("to_user") == request.user else F("to_user")
         )
-        print(chats.order_by("user"))
+        
         # chats = self.get_queryset().distinct("from_user", "to_user")
         page = self.paginate_queryset(chats)
 
