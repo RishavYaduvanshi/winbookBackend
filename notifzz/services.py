@@ -14,4 +14,4 @@ def send_notification(instance):
     desc = notification_data.pop("description")
     for user in instance.users.all():
         devices = GCMDevice.objects.filter(user=user)
-        devices.send_message(desc, extra=notification_data,use_fcm_notifications=False)
+        devices.send_message(desc, extra=notification_data)
