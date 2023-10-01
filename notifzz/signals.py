@@ -7,10 +7,7 @@ from . import services
 
 @receiver(authn_signals.follow_signal)
 def follow_handler(sender, instance, user, action, **kwargs):
-    print("instance: ", instance)
-    print("user: ", user)
-    print("action: ", action)
-    print("kwargs: ", kwargs)
+    
 
     if action == "follow":
         notif = models.Notification.objects.create(
@@ -25,10 +22,7 @@ def follow_handler(sender, instance, user, action, **kwargs):
 
 @receiver(postapp_signals.post_signal)
 def like_handler(sender, instance, user, action, **kwargs):
-    print("instance: ", instance)
-    print("user: ", user)
-    print("action: ", action)
-    print("kwargs: ", kwargs)
+    
 
     if action == postapp_models.Post.POST_LIKED:
         notif = models.Notification(
@@ -58,10 +52,7 @@ def like_handler(sender, instance, user, action, **kwargs):
 
 @receiver(postapp_signals.comment_signal)
 def comment_handler(sender, instance, user, action, **kwargs):
-    print("instance: ", instance)
-    print("user: ", user)
-    print("action: ", action)
-    print("kwargs: ", kwargs)
+    
 
     if action == postapp_models.Comment.COMMENT_CREATED:
         if instance.post.user == user:

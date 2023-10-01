@@ -29,7 +29,6 @@ async def send_message_worker(body, from_user, to_user):
 
 @receiver(post_save, sender=chat_models.Message)
 def send_message(sender, instance, created, **kwargs):
-    print("send_message")
     # if created:
     channel_layer = get_channel_layer()
 
@@ -37,6 +36,5 @@ def send_message(sender, instance, created, **kwargs):
 
     from_user = instance.from_user.pk
     to_user = instance.to_user.pk
-    print(f"|{from_user},{to_user}|")
 
     send_message_worker(body, from_user, to_user)

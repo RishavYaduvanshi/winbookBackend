@@ -122,7 +122,7 @@ class PostViewSet(viewsets.ModelViewSet):
         data["user"] = request.user.pk
         data["post"] = post.pk
         data["replied_to"] = None
-        print(data)
+        
         serializer = CommentSerializer(data=data, write=True)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -147,7 +147,6 @@ class CommentViewSet(viewsets.ModelViewSet):
         data = request.data.copy()
         data["user"] = request.user.pk
         data["replied_to"] = comment.pk
-        print(data)
         serializer = CommentSerializer(data=data, write=True)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -163,5 +162,4 @@ class CommentViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer([instance], many=True)
-        print(serializer.data)
         return Response(serializer.data)

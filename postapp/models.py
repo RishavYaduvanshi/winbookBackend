@@ -66,7 +66,6 @@ class Post(models.Model):
         new_post = self._state.adding
         s = super().save(*args, **kwargs)
         if new_post:
-            print("Post created")
             signals.post_signal.send_robust(
                 self.__class__, instance=self, user=self.user, action=self.POST_CREATED
             )

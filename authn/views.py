@@ -45,7 +45,7 @@ def loginfunc(request):
                 status=401,
             )
         elif users.count() == 1:
-            print(users.first())
+            
             user = authenticate(username=users.first().username, password=password)
 
     if user is None:
@@ -78,7 +78,6 @@ def signupFunc(request):
     last_name = request.POST.get("last_name", None)
     email = request.POST.get("email", None)
 
-    print(username, password, first_name, last_name, email)
 
     if (
         username is None
@@ -110,7 +109,6 @@ def forgotPassword(request):
 
     email = request.POST.get("email", None)
     token = request.POST.get("token", None)
-    print(email)
     if email is None:
         return HttpResponse('{"status":"error","message":"email is empty"}', status=401)
     user = User.objects.filter(email=email)
@@ -122,7 +120,6 @@ def forgotPassword(request):
     if token is not None:
         return _extracted_from_forgotPassword_(request, user, token)
     try:
-        print("sending mail")
         send_mail(
             subject="Reset Password",
             html_message=forgot_password.gen_forgot_mail(request, user),
@@ -131,7 +128,6 @@ def forgotPassword(request):
             fail_silently=False,
             recipient_list=[user.email],
         )
-        print("mail sent")
     except Exception as e:
         return HttpResponse(
             '{"status":"error","message":"' + str(e) + " " + '"}',
@@ -257,12 +253,12 @@ class UserViewSet(ModelViewSet):
             return Response(
                 {"status": "error", "message": "username is empty"}, status=400
             )
-        print(query)
+        
         instance = get_object_or_404(User, username=query)
 
         if request.user.is_authenticated and (follow is not None):
             follow = follow.lower() == "true"
-            print(follow)
+            
             if follow:
                 request.user.follow(instance)
             else:
@@ -273,7 +269,7 @@ class UserViewSet(ModelViewSet):
     @action(detail=False, methods=["get"], url_path=r"s/(?P<query>.+)")
     def search(self, request, *args, **kwargs):
         query = kwargs["query"]
-        print(query)
+        
         instance = User.objects.filter(
             Q(username__icontains=query)
             | Q(first_name__icontains=query)

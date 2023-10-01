@@ -68,7 +68,6 @@ class TokenPathAuthenticationMiddleware(auth.BaseMiddleware):
 
     async def __call__(self, scope, receive, send):
         if scope["type"] == "websocket":
-            print(scope)
             # fetch token from url path
             token = self.convert_to_str(scope.get("query_string", None))
             scope["user"] = await self.resolve_token(token)
